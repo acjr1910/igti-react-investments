@@ -16,7 +16,6 @@ const MONTHS = {
 };
 
 function Profit({ report }) {
-  console.log(report)
   return (
   <div className='profit'>
     <div>{MONTHS[report.month]}/{report.year}</div>
