@@ -10,11 +10,10 @@ export default class Investiments {
   setFundReports = (fundId, reports) => this.parsedData[fundId]['reports'] = reports;
 
   setFundTotalRendiments = (fundId, { firstReport, lastReport }) => {
-    const totalRendimentsPercentage = this.calcRendimentsPercentage(firstReport, lastReport);
-    const totalRendimentsValue = this.calcRendimentsValue(firstReport, lastReport);
+    const totalRendimentsPercentage = this.calcChangePercentage(firstReport, lastReport);
+    const totalRendimentsValue = this.calcDiff(firstReport, lastReport);
 
     this.parsedData[fundId]['rendiments'] = {
-      // TODO: cald right percentage
       percentage: totalRendimentsPercentage,
       value: totalRendimentsValue
     };
@@ -24,16 +23,24 @@ export default class Investiments {
 
   sortReports = (reports) => reports.sort((a, b) => (a.month - b.month));
 
-  calcRendimentsValue = (prevReport, report) => {
+  calcDiff = (prevReport, report) => {
     return (prevReport.value > report.value ? prevReport.value - report.value : report.value - prevReport.value).toFixed(2)
   };
 
-  calcRendimentsPercentage = (prevReport, report) => { 
+  calcDiffPercentage = (prevReport, report) => { 
     const prevReportValue = prevReport.value;
     const reportValue = report.value;
     const v1 = reportValue - prevReportValue;
-    const v2 = prevReportValue + reportValue;
-    const result = ((v1 / (v2 / 2)) * 100);
+    const v2 = (prevReportValue + reportValue) / 2;
+    const result = Math.ceil(((v1 / v2) * 100));
+    return result.toFixed(2);
+  }
+
+  calcChangePercentage = (prevReport, report) => { 
+    const v1  = prevReport.value;
+    const v2 = report.value;
+    const diff = v1 > v2 ? v1 - v2 : v2 - v1;
+    const result = ((diff / v1) * 100);
     return result.toFixed(2);
   }
 
@@ -41,8 +48,8 @@ export default class Investiments {
     const reports = this.parsedData[fund]['reports'];
     const reportsWithRendiments = reports.map((report, index) => {
       if (report.month === 1) return report;
-      const rendiment = this.calcRendimentsPercentage(reports[index - 1], report);
-      return { ...report, rendiment };
+      const rendiment = this.calcDiffPercentage(reports[index - 1], report);
+      return { ...report, rendiment: new Intl.NumberFormat('pt-BR').format(rendiment) };
     })
     return reportsWithRendiments;
   }
