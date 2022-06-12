@@ -5,7 +5,6 @@ import Fund from './Fund';
 
 function getFunds() {
   const investments = new InvestmentsParser(Data).parse().getParsedData();
-  console.log(investments);
   return investments;
 }
 
