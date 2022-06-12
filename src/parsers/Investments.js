@@ -39,8 +39,8 @@ export default class Investiments {
   calcChangePercentage = (prevReport, report) => { 
     const v1  = prevReport.value;
     const v2 = report.value;
-    const diff = v1 > v2 ? v1 - v2 : v2 - v1;
-    const result = ((diff / v1) * 100);
+    const diff = v2 - v1;
+    const result = (((diff) / v1) * 100);
     return result.toFixed(2);
   }
 
